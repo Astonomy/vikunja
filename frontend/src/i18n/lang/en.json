@@ -738,6 +738,7 @@
   "navigation": {
     "overview": "Overview",
     "upcoming": "Upcoming",
+    "assigned": "Assigned Tasks",
     "settings": "Settings",
     "imprint": "Imprint",
     "privacy": "Privacy Policy"
@@ -943,12 +944,14 @@
     "checklistAllDone": "{total} tasks",
     "show": {
       "titleCurrent": "Current Tasks",
+      "titleAssigned": "Assigned Tasks",
       "titleDates": "Tasks from {from} until {to}",
       "noDates": "Show tasks without date",
       "overdue": "Show overdue tasks",
       "fromuntil": "Tasks from {from} until {until}",
       "select": "Select a date range",
       "noTasks": "Nothing to do — Have a nice day!",
+      "noAssignedTasks": "No tasks are currently assigned to you.",
       "filterByLabel": "Filtering by label {label}",
       "clearLabelFilter": "Clear label filter",
       "savedFilterIgnored": "Your saved homepage filter is not applied while viewing tasks by label."
@@ -1279,6 +1282,7 @@
       "title": "Navigation",
       "overview": "Navigate to overview",
       "upcoming": "Navigate to upcoming tasks",
+      "assigned": "Navigate to assigned tasks",
       "labels": "Navigate to labels",
       "teams": "Navigate to teams",
       "projects": "Navigate to projects"

@@ -40,6 +40,17 @@
 				</li>
 				<li>
 					<RouterLink
+						v-shortcut="'KeyG KeyI'"
+						:to="{ name: 'tasks.assigned'}"
+					>
+						<span class="menu-item-icon icon">
+							<Icon icon="user" />
+						</span>
+						{{ $t('navigation.assigned') }}
+					</RouterLink>
+				</li>
+				<li>
+					<RouterLink
 						v-shortcut="'KeyG KeyP'"
 						:to="{ name: 'projects.index'}"
 					>

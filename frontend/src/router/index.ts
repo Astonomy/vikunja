@@ -201,6 +201,14 @@ const router = createRouter({
 			props: route => ({ taskId: Number(route.params.id as string) }),
 		},
 		{
+			path: '/tasks/assigned',
+			name: 'tasks.assigned',
+			component: UpcomingTasks,
+			props: {
+				assignedToCurrentUser: true,
+			},
+		},
+		{
 			path: '/tasks/by/upcoming',
 			name: 'tasks.range',
 			component: UpcomingTasks,

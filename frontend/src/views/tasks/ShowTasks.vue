@@ -69,7 +69,7 @@
 		</p>
 		<template v-if="!loading && (!tasks || tasks.length === 0) && showNothingToDo">
 			<h3 class="has-text-centered mbs-6">
-				{{ $t('task.show.noTasks') }}
+				{{ $t(props.assignedToCurrentUser ? 'task.show.noAssignedTasks' : 'task.show.noTasks') }}
 			</h3>
 			<LlamaCool class="llama-cool" />
 		</template>
@@ -132,12 +132,14 @@ const props = withDefaults(defineProps<{
 	showNulls?: boolean,
 	showOverdue?: boolean,
 	labelIds?: string[],
+	assignedToCurrentUser?: boolean,
 }>(), {
 	showNulls: false,
 	showOverdue: false,
 	dateFrom: undefined,
 	dateTo: undefined,
 	labelIds: undefined,
+	assignedToCurrentUser: false,
 })
 
 const emit = defineEmits<{
@@ -178,6 +180,10 @@ const savedFilterIgnored = computed(() => {
 })
 
 const pageTitle = computed(() => {
+	if (props.assignedToCurrentUser) {
+		return t('task.show.titleAssigned')
+	}
+
 	// We need to define "key" because it is the first parameter in the array and we need the second
 	const predefinedRange = Object.entries(DATE_RANGES)
 		.find(([, value]) => props.dateFrom === value[0] && props.dateTo === value[1])
@@ -197,6 +203,7 @@ const hasTasks = computed(() => tasks.value && tasks.value.length > 0)
 const userAuthenticated = computed(() => authStore.authenticated)
 const loading = computed(() => taskStore.isLoading || taskCollectionService.value.loading)
 const filterIdUsedOnOverview = computed(() => authStore.settings?.frontendSettings?.filterIdUsedOnOverview)
+const currentUsername = computed(() => authStore.info?.username?.trim() ?? '')
 
 interface dateStrings {
 	dateFrom: string,
@@ -269,6 +276,17 @@ async function loadPendingTasks(from: Date|string, to: Date|string, filterId: nu
 		}
 	}
 
+	if (props.assignedToCurrentUser) {
+		if (!currentUsername.value) {
+			tasks.value = []
+			emit('tasksLoaded', true)
+			return
+		}
+
+		const escapedUsername = currentUsername.value.replaceAll('\'', '\\\'')
+		params.filter += ` && assignees = '${escapedUsername}'`
+	}
+
 	// Add label filtering
 	if (props.labelIds && props.labelIds.length > 0) {
 		const labelFilter = `labels in ${props.labelIds.join(', ')}`
@@ -276,7 +294,8 @@ async function loadPendingTasks(from: Date|string, to: Date|string, filterId: nu
 	}
 
 	let projectId = null
-	if (showAll.value && filterId && typeof projectStore.projects[filterId] !== 'undefined'
+	if (!props.assignedToCurrentUser
+		&& showAll.value && filterId && typeof projectStore.projects[filterId] !== 'undefined'
 		&& (!props.labelIds || props.labelIds.length === 0)) {
 		projectId = filterId
 	}
@@ -307,7 +326,7 @@ function updateTasks(updatedTask: ITask) {
 // hasn't changed. Using watch with explicit dependencies and immediate:true gives us
 // the same behavior but only triggers when these specific values actually change.
 watch(
-	[() => props.dateFrom, () => props.dateTo, filterIdUsedOnOverview],
+	[() => props.dateFrom, () => props.dateTo, filterIdUsedOnOverview, currentUsername],
 	([from, to, filterId]) => loadPendingTasks(from, to, filterId),
 	{immediate: true},
 )
